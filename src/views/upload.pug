@@ -1,6 +1,6 @@
 extends base
 
 block content
-  form(action="", method="post") 
-    input(type="text", placeholder="Title", required)
+  form(action="/videos/upload", method="post") 
+    input(name="title" type="text", placeholder="Title", required)
     input(type="submit", value="Upload Video")
