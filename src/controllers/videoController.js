@@ -1,4 +1,3 @@
-import { format } from "morgan";
 import Video from "../models/Video";
 
 // Video.find({}, (error, videos) => {
