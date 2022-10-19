@@ -66,7 +66,8 @@ export const postLogin = async (req, res) => {
 			errorMessage: "Wrong password",
 		});
 	}
-	console.log("로그인 접속됨.");
+	req.session.loggedIn = true;
+	req.session.user = user;
 	return res.redirect("/");
 };
 export const logout = (req, res) => res.send("Log out");
