@@ -1,3 +1,5 @@
+import "dotenv/config";
+// require("dotenv").config();를 윗줄처럼 변경 가능하다.
 import "./db";
 import "./models/Video";
 import "./models/User";
