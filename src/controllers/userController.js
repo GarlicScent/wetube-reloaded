@@ -1,11 +1,12 @@
 import User from "../models/User";
+import fetch from "node-fetch";
 import bcrypt from "bcrypt";
 
 export const getJoin = (req, res) => {
 	return res.render("join", { pageTitle: "Join" });
 };
 export const postJoin = async (req, res) => {
-	console.log("this is req body of post join", req.body);
+	// console.log("this is req body of post join", req.body);
 	const { name, email, username, password, password2, location } = req.body;
 	const pageTitle = "Join";
 	if (password !== password2) {
@@ -40,8 +41,7 @@ export const postJoin = async (req, res) => {
 		});
 	}
 };
-export const edit = (req, res) => res.send("Edit User");
-export const remove = (req, res) => res.send("Remove User");
+
 export const getLogin = (req, res) => {
 	return res.render("login", { pageTitle: "Login" });
 };
@@ -70,5 +70,56 @@ export const postLogin = async (req, res) => {
 	req.session.user = user;
 	return res.redirect("/");
 };
+
+export const startGithubLogin = (req, res) => {
+	const baseUrl = "https://github.com/login/oauth/authorize";
+	const config = {
+		client_id: process.env.GH_CLIENT,
+		allow_signup: false,
+		scope: "read:user user:email",
+	};
+	const params = new URLSearchParams(config).toString();
+	//new URLSearchParams(config).toString(); -> 연결해서 보여준다.
+	const finalUrl = `${baseUrl}?${params}`;
+	res.redirect(finalUrl);
+};
+
+export const finishGithubLogin = async (req, res) => {
+	const baseUrl = "https://github.com/login/oauth/access_token";
+	const config = {
+		client_id: process.env.GH_CLIENT,
+		client_secret: process.env.GH_SECRET,
+		code: req.query.code,
+	};
+	const params = new URLSearchParams(config).toString();
+	const finalUrl = `${baseUrl}?${params}`;
+
+	const tokenRequest = await (
+		await fetch(finalUrl, {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+			},
+		})
+	).json();
+
+	if ("access_token" in tokenRequest) {
+		//access api...
+		const { access_token } = tokenRequest;
+		const userRequest = await (
+			await fetch("https://api.github.com/user", {
+				headers: {
+					Authorization: `token ${access_token}`,
+				},
+			})
+		).json();
+		console.log(userRequest);
+		return res.redirect("/");
+	} else {
+		return res.redirect("/login");
+	}
+};
+export const edit = (req, res) => res.send("Edit User");
+export const remove = (req, res) => res.send("Remove User");
 export const logout = (req, res) => res.send("Log out");
 export const see = (req, res) => res.send("See User");
