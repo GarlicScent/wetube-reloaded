@@ -157,5 +157,65 @@ export const logout = (req, res) => {
 	req.session.destroy();
 	return res.redirect("/");
 };
+
+export const startKakaoLogin = (req, res) => {
+	// GET: /oauth/authorize?client_id=${REST_API_KEY}&redirect_uri=${REDIRECT_URI}&response_type=code
+	// Host: kauth.kakao.com
+	const baseUrl = "https://kauth.kakao.com/oauth/authorize";
+	const config = {
+		client_id: process.env.KAKAO_CLIENT,
+		redirect_uri: "http://localhost:4000/users/kakao/finish",
+		response_type: "code",
+		//response_type=code로 고정.
+	};
+	const params = new URLSearchParams(config).toString();
+	console.log(params);
+	const finalUrl = `${baseUrl}?${params}`;
+	return res.redirect(finalUrl);
+};
+export const finishKakaoLogin = async (req, res) => {
+	console.log(req.body, req.query);
+	const baseUrl = "https://kauth.kakao.com/oauth/token";
+	const config = {
+		grant_type: "authorization_code",
+		client_id: process.env.KAKAO_CLIENT,
+		redirect_uri: "http://localhost:4000/users/kakao/finish",
+		code: req.query.code,
+		client_secret: process.env.KAKAO_SECRET,
+	};
+	const params = new URLSearchParams(config).toString();
+	const finalUrl = `${baseUrl}?${params}`;
+
+	const kakaoTokenRequest = await (
+		await fetch(finalUrl, {
+			headers: {
+				"Content-type":
+					"application/x-www-form-urlencoded;charset=utf-8",
+			},
+		})
+	).json();
+	console.log("이거슨 토큰값 받은 것:", kakaoTokenRequest);
+	// GET/POST /v2/user/me HTTP/1.1
+	// Host: kapi.kakao.com
+	// Authorization: Bearer ${ACCESS_TOKEN}/KakaoAK ${APP_ADMIN_KEY}
+	// Content-type: application/x-www-form-urlencoded;charset=utf-8
+	if ("access_token" in kakaoTokenRequest) {
+		const { access_token } = kakaoTokenRequest;
+		console.log("토큰 있다능~", access_token);
+		const apiUrl = "https://kapi.kakao.com";
+
+		const userData = await (
+			await fetch(`${apiUrl}/v2/user/me`, {
+				Authorization: `Bearer ${access_token}`,
+				headers: {
+					"Content-type":
+						"application/x-www-form-urlencoded;charset=utf-8",
+				},
+			})
+		).json();
+		console.log(userData);
+	}
+	res.send("로그인 됐다~~~");
+};
 export const edit = (req, res) => res.send("Edit User");
 export const see = (req, res) => res.send("See User");
