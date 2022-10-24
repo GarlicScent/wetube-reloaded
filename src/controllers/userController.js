@@ -155,6 +155,11 @@ export const finishGithubLogin = async (req, res) => {
 };
 export const logout = (req, res) => {
 	req.session.destroy();
+	// kakao logout방법:
+	// curl -v -X POST "https://kapi.kakao.com/v1/user/logout" \
+	// -H "Content-Type: application/x-www-form-urlencoded" \
+	// -H "Authorization: Bearer ${ACCESS_TOKEN}"
+
 	return res.redirect("/");
 };
 
@@ -174,7 +179,6 @@ export const startKakaoLogin = (req, res) => {
 	return res.redirect(finalUrl);
 };
 export const finishKakaoLogin = async (req, res) => {
-	console.log(req.body, req.query);
 	const baseUrl = "https://kauth.kakao.com/oauth/token";
 	const config = {
 		grant_type: "authorization_code",
@@ -188,6 +192,7 @@ export const finishKakaoLogin = async (req, res) => {
 
 	const kakaoTokenRequest = await (
 		await fetch(finalUrl, {
+			method: "POST",
 			headers: {
 				"Content-type":
 					"application/x-www-form-urlencoded;charset=utf-8",
@@ -201,21 +206,51 @@ export const finishKakaoLogin = async (req, res) => {
 	// Content-type: application/x-www-form-urlencoded;charset=utf-8
 	if ("access_token" in kakaoTokenRequest) {
 		const { access_token } = kakaoTokenRequest;
-		console.log("토큰 있다능~", access_token);
 		const apiUrl = "https://kapi.kakao.com";
-
 		const userData = await (
 			await fetch(`${apiUrl}/v2/user/me`, {
-				Authorization: `Bearer ${access_token}`,
 				headers: {
-					"Content-type":
-						"application/x-www-form-urlencoded;charset=utf-8",
+					Authorization: `Bearer ${access_token}`,
+					// "Content-type":
+					// 	"application/x-www-form-urlencoded;charset=utf-8",
 				},
 			})
 		).json();
+
 		console.log(userData);
+
+		const { kakao_account } = userData;
+		const { profile } = kakao_account;
+
+		if (!kakao_account.is_email_valid && !kakao_account.is_email_verified) {
+			return res.redirect("/login");
+		}
+		let user = await User.findOne({ email: kakao_account.email });
+
+		if (!user) {
+			user = await User.create({
+				name: profile.nickname,
+				username: kakao_account.email,
+				//2가지 방법이 있을 것 같다. 정규표현식 그리고 split하여 추출.
+				email: kakao_account.email,
+				password: "",
+				socialOnly: true,
+				avatarUrl: profile.profile_image_url,
+			});
+		}
+
+		req.session.loggedIn = true;
+		req.session.user = user;
+
+		return res.redirect("/");
+	} else {
+		return res.redirect("/login");
 	}
-	res.send("로그인 됐다~~~");
 };
+export const getEdit = (req, res) => {
+	return res.render("edit-profile", { pageTitle: "Edit Profile" });
+};
+export const postEdit = (req, res) => res.send("Edit User");
+
 export const edit = (req, res) => res.send("Edit User");
 export const see = (req, res) => res.send("See User");
