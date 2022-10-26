@@ -233,6 +233,7 @@ export const finishKakaoLogin = async (req, res) => {
 				name: profile.nickname,
 				username: kakao_account.email,
 				//2가지 방법이 있을 것 같다. 정규표현식 그리고 split하여 추출.
+				//🚀🚀🚀🚀이것 해야된다.
 				email: kakao_account.email,
 				password: "",
 				socialOnly: true,
@@ -251,7 +252,44 @@ export const finishKakaoLogin = async (req, res) => {
 export const getEdit = (req, res) => {
 	return res.render("edit-profile", { pageTitle: "Edit Profile" });
 };
-export const postEdit = (req, res) => res.send("Edit User");
+export const postEdit = async (req, res) => {
+	const {
+		session: {
+			user: { _id },
+		},
+		body: { email, name, username, location },
+	} = req;
+	//this is ES6 구조 분해 할당!! 와우!!! 완전 멋져~
+	const updatedUser = await User.findByIdAndUpdate(
+		_id,
+		{
+			email,
+			name,
+			username,
+			location,
+		},
+		{ new: true }
+	);
+	console.log("update한 유저입니다!", user);
+
+	req.session.user = updatedUser;
+	// req.session.user = {
+	// 	...req.session.user,
+	// 	email,
+	// 	name,
+	// 	username,
+	// 	location,
+	// };
+	// ...req.session.user 는 안의 내용을 꺼내서 넣게 해준다.
+	//그 다음 업데이트할 내용을 밑에 적어준 것이다.
+
+	//code challenge:
+	// 1. username이 기존 다른 데이터와 겹치는 것 해결,
+	//  - 유저가 입력한 유저네임과(req.body) 현재 user의 유저네임과(req.session.user) 다르다면 그때 디비에서 체크. Model.exists() 사용하면 될듯.
+
+	// 2. email이 겹치는 것 해결.
+	return res.redirect("/users/edit");
+};
 
 export const edit = (req, res) => res.send("Edit User");
 export const see = (req, res) => res.send("See User");
