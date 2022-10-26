@@ -231,7 +231,7 @@ export const finishKakaoLogin = async (req, res) => {
 		if (!user) {
 			user = await User.create({
 				name: profile.nickname,
-				username: kakao_account.email,
+				username: kakao_account.email.split("@")[0],
 				//2가지 방법이 있을 것 같다. 정규표현식 그리고 split하여 추출.
 				//🚀🚀🚀🚀이것 해야된다.
 				email: kakao_account.email,
