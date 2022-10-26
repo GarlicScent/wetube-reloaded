@@ -199,7 +199,8 @@ export const finishKakaoLogin = async (req, res) => {
 			},
 		})
 	).json();
-	console.log("이거슨 토큰값 받은 것:", kakaoTokenRequest);
+	// console.log("이것은 토큰값 받은 것:", kakaoTokenRequest);
+
 	// GET/POST /v2/user/me HTTP/1.1
 	// Host: kapi.kakao.com
 	// Authorization: Bearer ${ACCESS_TOKEN}/KakaoAK ${APP_ADMIN_KEY}
@@ -217,7 +218,7 @@ export const finishKakaoLogin = async (req, res) => {
 			})
 		).json();
 
-		console.log(userData);
+		// console.log("카카오 유저 정보:", userData);
 
 		const { kakao_account } = userData;
 		const { profile } = kakao_account;
@@ -238,7 +239,7 @@ export const finishKakaoLogin = async (req, res) => {
 				avatarUrl: profile.profile_image_url,
 			});
 		}
-
+		// console.log("카카오이메일로 찾은 유저 정보 혹은 생성한 정보:", user);
 		req.session.loggedIn = true;
 		req.session.user = user;
 
