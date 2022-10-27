@@ -233,7 +233,6 @@ export const finishKakaoLogin = async (req, res) => {
 				name: profile.nickname,
 				username: kakao_account.email.split("@")[0],
 				//2가지 방법이 있을 것 같다. 정규표현식 그리고 split하여 추출.
-				//🚀🚀🚀🚀이것 해야된다.
 				email: kakao_account.email,
 				password: "",
 				socialOnly: true,
@@ -255,22 +254,59 @@ export const getEdit = (req, res) => {
 export const postEdit = async (req, res) => {
 	const {
 		session: {
-			user: { _id },
+			user: { _id, username: currentUserName, email: currentEmail },
 		},
-		body: { email, name, username, location },
+		body: {
+			email: updatedEmail,
+			name,
+			username: updatedUsername,
+			location,
+		},
 	} = req;
 	//this is ES6 구조 분해 할당!! 와우!!! 완전 멋져~
+
+	//code challenge:
+	// 1. username이 기존 다른 데이터와 겹치는 것 해결,
+	//  - 유저가 입력한 유저네임과(req.body) 현재 user의 유저네임과(req.session.user) 다르다면 그때 디비에서 체크. Model.exists() 사용하면 될듯.
+	if (currentUserName !== updatedUsername) {
+		const checkBoolean = Boolean(
+			await User.exists({ username: updatedUsername })
+		);
+		console.log("✅checkBoolean:", checkBoolean);
+		if (checkBoolean) {
+			return res.status(400).render("edit-profile", {
+				pageTitle: "Edit Profile",
+				errorMessage:
+					"An account with this username already exists. Please use another one",
+			});
+		}
+	}
+	// 2. email이 겹치는 것 해결.
+	if (currentEmail !== updatedEmail) {
+		const checkBoolean = Boolean(
+			await User.exists({ email: updatedEmail })
+		);
+		console.log("✅checkBoolean:", checkBoolean);
+		if (checkBoolean) {
+			return res.status(400).render("edit-profile", {
+				pageTitle: "Edit Profile",
+				errorMessage:
+					"An account with this email already exists. Please use another one",
+			});
+		}
+	}
+
 	const updatedUser = await User.findByIdAndUpdate(
 		_id,
 		{
-			email,
+			email: updatedEmail,
 			name,
-			username,
+			username: updatedUsername,
 			location,
 		},
 		{ new: true }
+		//new: true로 하지 않으면, update 전 내용이 반환된다. mongoose doc 참조!
 	);
-	console.log("update한 유저입니다!", user);
 
 	req.session.user = updatedUser;
 	// req.session.user = {
@@ -281,13 +317,6 @@ export const postEdit = async (req, res) => {
 	// 	location,
 	// };
 	// ...req.session.user 는 안의 내용을 꺼내서 넣게 해준다.
-	//그 다음 업데이트할 내용을 밑에 적어준 것이다.
-
-	//code challenge:
-	// 1. username이 기존 다른 데이터와 겹치는 것 해결,
-	//  - 유저가 입력한 유저네임과(req.body) 현재 user의 유저네임과(req.session.user) 다르다면 그때 디비에서 체크. Model.exists() 사용하면 될듯.
-
-	// 2. email이 겹치는 것 해결.
 	return res.redirect("/users/edit");
 };
 
