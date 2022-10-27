@@ -9,3 +9,9 @@ block content
     input(name="username" type="text" required placeholder="Username" value=loggedInUser.username) 
     input(name="location" type="text" required placeholder="Location" value=loggedInUser.location)
     input(type="submit" value="Update Profile")
+    if !loggedInUser.socialOnly 
+      hr
+      a(href="change-password") Change Password &rarr;
+    //- not using absolute url. here it's relative url!
+    //- 이렇게 사용하면 localhost:4000/users/change-password로 링크로 넘어간다.
+    //- absolute url (/change-password) 사용하면 localhost:4000/change-password가 된다.
