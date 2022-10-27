@@ -59,6 +59,7 @@ export const postLogin = async (req, res) => {
 
 	//check if password correct
 	const ok = await bcrypt.compare(password, user.password);
+	console.log("this is login ok", ok);
 	//bcrypt에서 사용자가 입력한 비밀번호와 hash된 비밀번호를 비교해서 맞는지 확인한다.
 	if (!ok) {
 		return res.status(400).render("login", {
@@ -326,8 +327,32 @@ export const getChangePassword = (req, res) => {
 	}
 	res.render("users/change-password", { pageTitle: "Change Password" });
 };
-export const postChangePassword = (req, res) => {
-	//send notification
-	res.redirect("/");
+export const postChangePassword = async (req, res) => {
+	const {
+		session: {
+			user: { _id },
+		},
+		body: { oldPassword, newPassword, newPasswordConfirm },
+	} = req;
+
+	const user = await User.findById(_id);
+	const ok = await bcrypt.compare(oldPassword, user.password);
+	//bcrypt.compare로 입력받은 비밀번호와 해싱된 비밀번호를 비교해서 맞는지 확인한다.
+	if (!ok) {
+		return res.status(400).render("users/change-password", {
+			pageTitle: "Change Password",
+			errorMessage: "The current password is incorrect",
+		});
+	}
+
+	if (newPassword !== newPasswordConfirm) {
+		return res.status(400).render("users/change-password", {
+			pageTitle: "Change Password",
+			errorMessage: "The password does not match the confirmation",
+		});
+	}
+	user.password = newPassword;
+	await user.save();
+	res.redirect("/users/logout");
 };
 export const see = (req, res) => res.send("See User");
