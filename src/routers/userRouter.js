@@ -11,12 +11,20 @@ import {
 	startGithubLogin,
 	startKakaoLogin,
 } from "../controllers/userController";
-import { protectMiddleware, publicOnlyMiddleware } from "../middlewares";
+import {
+	protectMiddleware,
+	publicOnlyMiddleware,
+	uploadFiles,
+} from "../middlewares";
 
 const userRouter = express.Router();
 
 userRouter.get("/logout", protectMiddleware, logout);
-userRouter.route("/edit").all(protectMiddleware).get(getEdit).post(postEdit);
+userRouter
+	.route("/edit")
+	.all(protectMiddleware)
+	.get(getEdit)
+	.post(uploadFiles.single("avatar"), postEdit);
 userRouter
 	.route("/change-password")
 	.all(protectMiddleware)
