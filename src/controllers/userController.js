@@ -255,7 +255,12 @@ export const getEdit = (req, res) => {
 export const postEdit = async (req, res) => {
 	const {
 		session: {
-			user: { _id, username: currentUserName, email: currentEmail },
+			user: {
+				_id,
+				username: currentUserName,
+				email: currentEmail,
+				avatarUrl,
+			},
 		},
 		body: {
 			email: updatedEmail,
@@ -263,7 +268,7 @@ export const postEdit = async (req, res) => {
 			username: updatedUsername,
 			location,
 		},
-		file: { path },
+		file,
 	} = req;
 	//this is ES6 구조 분해 할당!! 와우!!! 완전 멋져~
 
@@ -301,6 +306,7 @@ export const postEdit = async (req, res) => {
 	const updatedUser = await User.findByIdAndUpdate(
 		_id,
 		{
+			avatarUrl: file ? file.path : avatarUrl,
 			email: updatedEmail,
 			name,
 			username: updatedUsername,
