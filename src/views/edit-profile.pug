@@ -3,6 +3,7 @@ extends base
 block content
   if errorMessage 
     span=errorMessage
+  img(src=loggedInUser.avatarUrl, alt="" width=100)
   form(method="POST" enctype="multipart/form-data")
     //-  encoding type을 multipart/form-data 형식으로 보낼 것이다.
     label(for="avatar") Avatar 

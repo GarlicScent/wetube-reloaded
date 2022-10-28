@@ -302,7 +302,7 @@ export const postEdit = async (req, res) => {
 			});
 		}
 	}
-	console.log(path);
+
 	const updatedUser = await User.findByIdAndUpdate(
 		_id,
 		{
@@ -311,7 +311,6 @@ export const postEdit = async (req, res) => {
 			name,
 			username: updatedUsername,
 			location,
-			// avatarUrl: path,
 		},
 		{ new: true }
 		//new: true로 하지 않으면, update 전 내용이 반환된다. mongoose doc 참조!
