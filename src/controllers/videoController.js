@@ -75,10 +75,15 @@ export const postUpload = async (req, res) => {
 };
 
 export const deleteVideo = async (req, res) => {
-	const { id } = req.body;
-
+	const { id } = req.params;
 	//delete video.
-	await Video.findByIdAndDelete(id);
+	//여기서 작성자만 삭제할 수 있게 변경이 필요한데, 추후 강의 진행하며 진행 필요.
+	try {
+		const result = await Video.findByIdAndDelete(id);
+		console.log("this is result", result);
+	} catch (error) {
+		console.log(error);
+	}
 	return res.redirect("/");
 };
 
