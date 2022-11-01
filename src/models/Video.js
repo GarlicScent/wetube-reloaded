@@ -16,6 +16,13 @@ const videoSchema = new mongoose.Schema({
 		views: { type: Number, required: true, default: 0 },
 		rating: { type: Number, required: true, default: 0 },
 	},
+	owner: {
+		type: mongoose.Schema.Types.ObjectId,
+		required: true,
+		ref: "User",
+	},
+	//ObjectId is come only from mongoose. reference as ref: ''. 해당 모델의 아이디를 연결하기 위함이다.
+	//ObjectId는 유저 모델에서 가져온 것이다. 이것은 populate를 사용하기 위함이다.
 });
 
 videoSchema.static("formatHashtags", function (hashtags) {

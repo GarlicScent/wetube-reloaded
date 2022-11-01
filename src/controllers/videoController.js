@@ -1,4 +1,5 @@
 import Video from "../models/Video";
+import User from "../models/User";
 
 // Video.find({}, (error, videos) => {
 // 	console.log("search finished");
@@ -17,10 +18,14 @@ export const watch = async (req, res) => {
 	const { id } = req.params;
 
 	const video = await Video.findById(id);
+	const owner = await User.findById(video.owner);
+	//video 에 저장된 owner 아이디를 가져와서 다시 유저 정보를 찾는다. 하지만 populate를 사용하면 이렇게 하지 않아도 된다.
+	console.log("vid:", video);
+	console.log("owner:", owner);
 	if (!video) {
 		return res.status(404).render("404", { pageTitle: "Video not found" });
 	}
-	return res.render("Watch", { pageTitle: video.title, video });
+	return res.render("Watch", { pageTitle: video.title, video, owner });
 };
 export const getEdit = async (req, res) => {
 	const { id } = req.params;
@@ -54,11 +59,23 @@ export const getUpload = (req, res) => {
 };
 
 export const postUpload = async (req, res) => {
-	const { path: fileUrl } = req.file;
-	const { title, hashtags, description } = req.body;
+	// const {
+	// 	user: { _id },
+	// } = req.session;
+	// const { path: fileUrl } = req.file;
+	// const { title, hashtags, description } = req.body;
+
+	const {
+		session: {
+			user: { _id },
+		},
+		file: { path: fileUrl },
+		body: { title, hashtags, description },
+	} = req;
 	try {
 		await Video.create({
 			fileUrl,
+			owner: _id,
 			title,
 			description,
 			hashtags: Video.formatHashtags(hashtags),
