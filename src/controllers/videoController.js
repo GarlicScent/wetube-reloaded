@@ -17,15 +17,15 @@ export const home = async (req, res) => {
 export const watch = async (req, res) => {
 	const { id } = req.params;
 
-	const video = await Video.findById(id);
-	const owner = await User.findById(video.owner);
-	//video 에 저장된 owner 아이디를 가져와서 다시 유저 정보를 찾는다. 하지만 populate를 사용하면 이렇게 하지 않아도 된다.
+	const video = await Video.findById(id).populate("owner");
+	//이렇게 모델들끼리 데이터를 연결할 수 있다.! mysql에서 join과 같은 느낌이네.
+
 	console.log("vid:", video);
-	console.log("owner:", owner);
+
 	if (!video) {
 		return res.status(404).render("404", { pageTitle: "Video not found" });
 	}
-	return res.render("Watch", { pageTitle: video.title, video, owner });
+	return res.render("Watch", { pageTitle: video.title, video });
 };
 export const getEdit = async (req, res) => {
 	const { id } = req.params;
@@ -73,13 +73,17 @@ export const postUpload = async (req, res) => {
 		body: { title, hashtags, description },
 	} = req;
 	try {
-		await Video.create({
+		const newVideo = await Video.create({
 			fileUrl,
 			owner: _id,
 			title,
 			description,
 			hashtags: Video.formatHashtags(hashtags),
 		});
+
+		const user = await User.findById(_id);
+		user.videos.push(newVideo._id);
+		user.save();
 	} catch (error) {
 		console.log(error);
 		res.status(400).render("upload", {

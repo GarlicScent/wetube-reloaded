@@ -23,7 +23,7 @@ app.use(
 		resave: true,
 		saveUninitialized: true,
 		cookie: {
-			maxAge: 20000,
+			maxAge: 2000000,
 			//ms으로 20초 후에 세션 쿠키가 만료되게 설정한다.
 		},
 		store: MongoStore.create({
