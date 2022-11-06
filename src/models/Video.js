@@ -14,7 +14,6 @@ const videoSchema = new mongoose.Schema({
 	hashtags: [{ type: String, trim: true }],
 	meta: {
 		views: { type: Number, required: true, default: 0 },
-		rating: { type: Number, required: true, default: 0 },
 	},
 	owner: {
 		type: mongoose.Schema.Types.ObjectId,
