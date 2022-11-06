@@ -13,9 +13,11 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre("save", async function () {
-	// console.log("users password: ", this.password);
-	this.password = await bcrypt.hash(this.password, 7);
-	// console.log("hashed password: ", this.password);
+	if (this.isModified("password")) {
+		//this.isModified() 아무것도 전달안하면 모든 변경점에 대해서 true를 반환하고,
+		//"password"를 전달해주면, Schema의 password가 변경할 때만 true를 반환한다.
+		this.password = await bcrypt.hash(this.password, 7);
+	}
 });
 const User = mongoose.model("User", userSchema);
 
