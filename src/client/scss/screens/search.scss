@@ -1,8 +1,10 @@
 .search__form{
   display: flex;
-  flex-direction: column;
+  align-items: center;
   max-width: 320px;
   margin: 0 auto;
+  margin-bottom: 60px;
+  position: relative;
   input {
     all: unset;
     padding: 15px 20px;
@@ -12,12 +14,20 @@
     border-radius: 8px;
     margin-bottom: 7px;
     font-size: 16px;
+    width: 90%;
   }
-  input[type="submit"]{
-    background-color: rgba(0,0,0,0.3);
+  button {
+    all:unset;
+    // border: 1px solid rgba(255,255,255,0.2);
+    position: absolute;
+    right: 3px;
+    top: 3px;
+    font-size: 20px;
+    background-color: rgba(0,0,0,0.5);
     color: white;
     text-align: center;
-    padding: 10px;
-    cursor:pointer;
+    padding: 13px; 
+    border-radius: 8px;
+    cursor: pointer;
   }
 }
