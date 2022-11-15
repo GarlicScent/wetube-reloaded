@@ -151,7 +151,7 @@ export const search = async (req, res) => {
 				//^keyword -> keyword로 시작하는 것만 필터링한다.
 				//keyword$ -> keyword로 끝나는 것만 필터링한다.
 			},
-		});
+		}).populate("owner");
 	}
 	return res.render("search", { pageTitle: "Search", videos });
 };
