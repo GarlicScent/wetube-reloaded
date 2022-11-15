@@ -7,14 +7,17 @@ module.exports = {
 			filename: "css/styles.css",
 		}),
 	],
-	entry: "./src/client/js/main.js",
+	entry: {
+		main: "./src/client/js/main.js",
+		videoPlayer: "./src/client/js/videoPlayer.js",
+	},
 	mode: "development",
 	//mode 설정을 안하면 기본적으로 production 모드로 설정되어 압축된다. development에서는 읽기 편하게 바꿔준다.
 	watch: true,
 	//nodemon 처럼 변경하면 지켜보다가 바로 적용해준다.
 	output: {
-		filename: "js/main.js",
-		//변경한 파일이름
+		filename: "js/[name].js",
+		//변경한 파일이름 [name]으로 작성하면 entry의 key로 할 수 있다.
 		path: path.resolve(__dirname, "assets"),
 		//변경한 파일 저장 위치
 		clean: true,
