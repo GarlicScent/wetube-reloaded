@@ -1,0 +1,24 @@
+.social-login {
+	color: white;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	border-top: 1px solid rgba(255, 255, 255, 0.4);
+	margin-top: 15px;
+	padding-top: 15px;
+	a {
+		width: fit-content;
+		border-radius: 22px;
+		i {
+			font-size: 22px;
+		}
+	}
+	.social__btn--github {
+		background-color: transparent;
+		color: azure;
+	}
+	.social__btn--kakao {
+		background-color: transparent;
+		color: yellow;
+	}
+}

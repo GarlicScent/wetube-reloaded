@@ -365,7 +365,15 @@ export const postChangePassword = async (req, res) => {
 };
 export const see = async (req, res) => {
 	const { id } = req.params;
-	const user = await User.findById(id).populate("videos");
+	const user = await User.findById(id).populate({
+		path: "videos",
+		//User 모델의 videos를 먼저 populate하는 것을 path에 작성한다.
+		populate: {
+			path: "owner",
+			model: "User",
+		},
+	});
+	//double populate. populate 두번을 해서, video를 불러오고 해당 비디오의 저자를 다시 populate한다.
 	console.log(user);
 	if (!user) {
 		return res.status(404).render("404", { pageTitle: "User Not Found" });
