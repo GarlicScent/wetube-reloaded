@@ -1,7 +1,8 @@
 const video = document.querySelector("video");
 const playBtn = document.getElementById("play");
 const muteBtn = document.getElementById("mute");
-const time = document.getElementById("time");
+const currentTime = document.getElementById("currentTime");
+const totalTime = document.getElementById("totalTime");
 const volumeRange = document.getElementById("volume");
 
 let volumeValue = 0.5;
@@ -42,6 +43,27 @@ const handleVolumeChange = (event) => {
 	video.volume = value;
 };
 
+const handleLoadedMetadata = () => {
+	const vidTime = Math.floor(video.duration);
+	totalTime.innerText = `${parseInt(vidTime / 60)}:${vidTime % 60}`;
+};
+
+const handleTimeUpdate = () => {
+	const { currentTime: vidCurrentTime } = video;
+	const minute =
+		parseInt(vidCurrentTime / 60) < 10
+			? `0${parseInt(vidCurrentTime / 60)}`
+			: `${parseInt(vidCurrentTime / 60)}`;
+	const sec =
+		vidCurrentTime % 60 < 10
+			? `0${parseInt(vidCurrentTime % 60)}`
+			: `${parseInt(vidCurrentTime % 60)}`;
+	//분과 초가 00:00으로 표현되게 수정하였다.
+	currentTime.innerText = `${minute}:${sec}`;
+};
+
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMute);
 volumeRange.addEventListener("input", handleVolumeChange);
+video.addEventListener("loadedmetadata", handleLoadedMetadata);
+video.addEventListener("timeupdate", handleTimeUpdate);
