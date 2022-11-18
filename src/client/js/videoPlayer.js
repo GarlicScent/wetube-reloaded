@@ -43,23 +43,17 @@ const handleVolumeChange = (event) => {
 	video.volume = value;
 };
 
+const formatTime = (sec) => {
+	return new Date(sec * 1000).toISOString().slice(14, 19);
+	// Date 객체를 활용한 시간 편집하기. 꿀팁이다.
+};
+
 const handleLoadedMetadata = () => {
-	const vidTime = Math.floor(video.duration);
-	totalTime.innerText = `${parseInt(vidTime / 60)}:${vidTime % 60}`;
+	totalTime.innerText = formatTime(Math.floor(video.duration));
 };
 
 const handleTimeUpdate = () => {
-	const { currentTime: vidCurrentTime } = video;
-	const minute =
-		parseInt(vidCurrentTime / 60) < 10
-			? `0${parseInt(vidCurrentTime / 60)}`
-			: `${parseInt(vidCurrentTime / 60)}`;
-	const sec =
-		vidCurrentTime % 60 < 10
-			? `0${parseInt(vidCurrentTime % 60)}`
-			: `${parseInt(vidCurrentTime % 60)}`;
-	//분과 초가 00:00으로 표현되게 수정하였다.
-	currentTime.innerText = `${minute}:${sec}`;
+	currentTime.innerText = formatTime(Math.floor(video.currentTime));
 };
 
 playBtn.addEventListener("click", handlePlayClick);
