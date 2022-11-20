@@ -9,6 +9,7 @@ const fullScreenBtn = document.getElementById("fullScreenBtn");
 const videoContainer = document.getElementById("videoContainer");
 
 let controlsTimeout = null;
+let controlsMovementTimeout = null;
 let volumeValue = 0.5;
 video.volume = volumeValue;
 
@@ -81,18 +82,26 @@ const handleFullScreen = () => {
 	}
 };
 
+const hideControls = () => videoContainer.classList.remove("showing");
+
 const handleMousemove = () => {
+	//mouseleave로 발생한 timeout을 마우스가 div안에서 움직이면 취소함.
 	if (controlsTimeout) {
 		clearTimeout(controlsTimeout);
 		controlsTimeout = null;
 	}
+	//이전에 움직여서 생성한 timeout을 클리어하는 것.
+	if (controlsMovementTimeout) {
+		clearTimeout(controlsMovementTimeout);
+		controlsMovementTimeout = null;
+	}
 	videoContainer.classList.add("showing");
+	//새로 움직인 것에 대한 timeout.
+	controlsMovementTimeout = setTimeout(hideControls, 3000);
 };
 
 const handleMouseleave = () => {
-	controlsTimeout = setTimeout(() => {
-		videoContainer.classList.remove("showing");
-	}, 3000);
+	controlsTimeout = setTimeout(hideControls, 3000);
 };
 
 playBtn.addEventListener("click", handlePlayClick);
