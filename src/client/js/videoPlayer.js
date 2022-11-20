@@ -71,12 +71,13 @@ const handleTimeLineChange = (event) => {
 
 const handleFullScreen = () => {
 	const fullscreen = document.fullscreenElement;
+	console.log(fullscreen);
 	if (fullscreen) {
-		fullScreenBtn.innerText = "Exit Full Screen";
 		document.exitFullscreen();
+		fullScreenBtn.innerText = "Enter Full Screen";
 	} else {
 		videoContainer.requestFullscreen();
-		fullScreenBtn.innerText = "Enter Full Screen";
+		fullScreenBtn.innerText = "Exit Full Screen";
 		//video.requestFullscreen(); 하면 비디오만 풀화면되고, 콘트롤러들은 안보이게된다.
 		//videoContainer로 원하는 요소들을 감싼다음에 풀스크린해줘야된다.
 	}
@@ -111,5 +112,5 @@ video.addEventListener("loadedmetadata", handleLoadedMetadata);
 video.addEventListener("timeupdate", handleTimeUpdate);
 timeline.addEventListener("input", handleTimeLineChange);
 fullScreenBtn.addEventListener("click", handleFullScreen);
-video.addEventListener("mousemove", handleMousemove);
-video.addEventListener("mouseleave", handleMouseleave);
+videoContainer.addEventListener("mousemove", handleMousemove);
+videoContainer.addEventListener("mouseleave", handleMouseleave);
