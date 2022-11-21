@@ -10,6 +10,7 @@ const timeline = document.getElementById("timeline");
 const fullScreenBtn = document.getElementById("fullScreenBtn");
 const fullScreenIcon = fullScreenBtn.querySelector("i");
 const videoContainer = document.getElementById("videoContainer");
+const videoControls = document.getElementById("videoControls");
 
 let controlsTimeout = null;
 let controlsMovementTimeout = null;
@@ -88,7 +89,7 @@ const handleFullScreen = () => {
 	}
 };
 
-const hideControls = () => videoContainer.classList.remove("showing");
+const hideControls = () => videoControls.classList.remove("showing");
 
 const handleMousemove = () => {
 	//mouseleave로 발생한 timeout을 마우스가 div안에서 움직이면 취소함.
@@ -101,7 +102,7 @@ const handleMousemove = () => {
 		clearTimeout(controlsMovementTimeout);
 		controlsMovementTimeout = null;
 	}
-	videoContainer.classList.add("showing");
+	videoControls.classList.add("showing");
 	//새로 움직인 것에 대한 timeout.
 	controlsMovementTimeout = setTimeout(hideControls, 3000);
 };
