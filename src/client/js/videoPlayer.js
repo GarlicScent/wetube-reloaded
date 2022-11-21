@@ -1,11 +1,14 @@
 const video = document.querySelector("video");
 const playBtn = document.getElementById("play");
+const playBtnIcon = playBtn.querySelector("i");
 const muteBtn = document.getElementById("mute");
+const muteBtnIcon = muteBtn.querySelector("i");
 const currentTime = document.getElementById("currentTime");
 const totalTime = document.getElementById("totalTime");
 const volumeRange = document.getElementById("volume");
 const timeline = document.getElementById("timeline");
 const fullScreenBtn = document.getElementById("fullScreenBtn");
+const fullScreenIcon = fullScreenBtn.querySelector("i");
 const videoContainer = document.getElementById("videoContainer");
 
 let controlsTimeout = null;
@@ -19,7 +22,7 @@ const handlePlayClick = (e) => {
 	} else {
 		video.pause();
 	}
-	playBtn.innerText = video.paused ? "Play" : "Paused";
+	playBtnIcon.classList = video.paused ? "fas fa-play" : "fas fa-puase";
 };
 
 const handleMute = (e) => {
@@ -30,7 +33,9 @@ const handleMute = (e) => {
 		//음소거 아닌데 버튼 클릭했을 때
 		video.muted = true;
 	}
-	muteBtn.innerText = video.muted ? "Unmute" : "Mute";
+	muteBtnIcon.classList = video.muted
+		? "fas fa-volume-mute"
+		: "fas fa-volume-up";
 	volumeRange.value = video.muted ? 0 : volumeValue;
 };
 
@@ -74,10 +79,10 @@ const handleFullScreen = () => {
 	console.log(fullscreen);
 	if (fullscreen) {
 		document.exitFullscreen();
-		fullScreenBtn.innerText = "Enter Full Screen";
+		fullScreenIcon.classList = "fas fa-expand";
 	} else {
 		videoContainer.requestFullscreen();
-		fullScreenBtn.innerText = "Exit Full Screen";
+		fullScreenIcon.classList = "fas fa-compress";
 		//video.requestFullscreen(); 하면 비디오만 풀화면되고, 콘트롤러들은 안보이게된다.
 		//videoContainer로 원하는 요소들을 감싼다음에 풀스크린해줘야된다.
 	}
@@ -108,7 +113,7 @@ const handleMouseleave = () => {
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMute);
 volumeRange.addEventListener("input", handleVolumeChange);
-video.addEventListener("loadedmetadata", handleLoadedMetadata);
+video.addEventListener("loadeddata", handleLoadedMetadata);
 video.addEventListener("timeupdate", handleTimeUpdate);
 timeline.addEventListener("input", handleTimeLineChange);
 fullScreenBtn.addEventListener("click", handleFullScreen);
