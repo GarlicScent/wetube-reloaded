@@ -17,13 +17,13 @@ let controlsMovementTimeout = null;
 let volumeValue = 0.5;
 video.volume = volumeValue;
 
-const handlePlayClick = (e) => {
+const handlePlayClick = () => {
 	if (video.paused) {
 		video.play();
 	} else {
 		video.pause();
 	}
-	playBtnIcon.classList = video.paused ? "fas fa-play" : "fas fa-puase";
+	playBtnIcon.classList = video.paused ? "fas fa-play" : "fas fa-pause";
 };
 
 const handleMute = (e) => {
@@ -111,6 +111,12 @@ const handleMouseleave = () => {
 	controlsTimeout = setTimeout(hideControls, 3000);
 };
 
+const handleKeydown = (event) => {
+	console.log(event);
+	if (event.code === "Space") {
+		handlePlayClick();
+	}
+};
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMute);
 volumeRange.addEventListener("input", handleVolumeChange);
@@ -120,3 +126,5 @@ timeline.addEventListener("input", handleTimeLineChange);
 fullScreenBtn.addEventListener("click", handleFullScreen);
 videoContainer.addEventListener("mousemove", handleMousemove);
 videoContainer.addEventListener("mouseleave", handleMouseleave);
+video.addEventListener("click", handlePlayClick);
+window.addEventListener("keydown", handleKeydown);
