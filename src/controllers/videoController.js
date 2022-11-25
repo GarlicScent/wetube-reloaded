@@ -58,7 +58,7 @@ export const postEdit = async (req, res) => {
 	const video = await Video.exists({ _id: id });
 	console.log("postEdit: ", video);
 	if (!video) {
-		return res.render("404", { pageTitle: "Video not found" });
+		return res.status(404).render("404", { pageTitle: "Video not found" });
 	}
 	if (String(video.owner) !== String(_id)) {
 		return res.status(403).redirect("/");
@@ -160,9 +160,10 @@ export const registerView = async (req, res) => {
 	const { id } = req.params;
 	const video = await Video.findById(id);
 	if (!video) {
-		return res.status(404);
+		return res.sendStatus(404);
+		//그냥 status(404)하면 상태를 보내지는게 아니라 상태만 설정한 것이고, 404상태를 보내려면 .sendStatus(404)를 사용해야한다.
 	}
 	video.meta.views = video.meta.views + 1;
 	await video.save();
-	return res.status(200);
+	return res.sendStatus(200);
 };

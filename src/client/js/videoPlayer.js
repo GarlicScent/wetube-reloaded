@@ -117,6 +117,13 @@ const handleKeydown = (event) => {
 		handlePlayClick();
 	}
 };
+const handleEnded = () => {
+	const { id } = videoContainer.dataset;
+	fetch(`/api/videos/${id}/view`, {
+		method: "POST",
+	});
+	//method:"POST" 설정을 안한다면 get request가 된다.
+};
 playBtn.addEventListener("click", handlePlayClick);
 muteBtn.addEventListener("click", handleMute);
 volumeRange.addEventListener("input", handleVolumeChange);
@@ -128,3 +135,4 @@ videoContainer.addEventListener("mousemove", handleMousemove);
 videoContainer.addEventListener("mouseleave", handleMouseleave);
 video.addEventListener("click", handlePlayClick);
 window.addEventListener("keydown", handleKeydown);
+video.addEventListener("ended", handleEnded);
