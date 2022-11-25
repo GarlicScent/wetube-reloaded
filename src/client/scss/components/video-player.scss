@@ -23,7 +23,7 @@
 		// positon absolute일때 right:0; left:0; margin: 0 auto;를 하면 가운데로 정렬된다.
 		display: grid;
 		grid-template-columns: 1fr 4fr 1fr auto;
-		gap: 10px;
+		gap: 8px;
 		justify-content: space-between;
 		background-color: #0f1117;
 		padding: 10px 20px 10px 10px;
