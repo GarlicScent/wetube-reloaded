@@ -7,10 +7,13 @@ form {
 	border: 1px solid rgba($color: #ffffff, $alpha: 0.4);
 	margin-bottom: 40px;
 }
+#video {
+	margin-top: 5px;
+}
 input:not([type="range"]) {
 	// input:not(input[type="range"]){ 로 작성시 다른 input이 미적용되어 수정함.
 	all: unset;
-	padding: 15px 20px;
+	padding: 13px 20px;
 	border: 1px solid rgba(255, 255, 255, 0.2);
 	background-color: white;
 	color: black;

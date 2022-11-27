@@ -10,6 +10,7 @@ module.exports = {
 	entry: {
 		main: "./src/client/js/main.js",
 		videoPlayer: "./src/client/js/videoPlayer.js",
+		recorder: "./src/client/js/recorder.js",
 	},
 	mode: "development",
 	//mode 설정을 안하면 기본적으로 production 모드로 설정되어 압축된다. development에서는 읽기 편하게 바꿔준다.
