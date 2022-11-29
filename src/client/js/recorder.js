@@ -1,14 +1,48 @@
 const startBtn = document.getElementById("startBtn");
 const video = document.getElementById("preview");
-const handleStart = async () => {
-	const constraints = {
-		audio: false,
-		video: true, //{ width: 200, height: 100 }
+
+let stream;
+let recorder;
+
+const handleDownload = () => {};
+
+const handleStop = () => {
+	startBtn.innerText = "Download Recording";
+	startBtn.removeEventListener("click", handleStop);
+	startBtn.addEventListener("click", handleDownload);
+	recorder.stop();
+};
+
+const handleStart = () => {
+	startBtn.innerText = "Stop Recording";
+	startBtn.removeEventListener("click", handleStart);
+	startBtn.addEventListener("click", handleStop);
+
+	recorder = new MediaRecorder(stream);
+	recorder.ondataavailable = (e) => {
+		const videoFile = URL.createObjectURL(e.data);
+		//.createObjectURL()은 브라우저 메모리에서만 사용 가능한 url을 생성해준다. 이 url은 파일을 가르킨다. 브라우저 yes. server no!
+		video.srcObject = null;
+		video.src = videoFile;
+		video.loop = true;
+		video.play();
 	};
-	const stream = await navigator.mediaDevices.getUserMedia(constraints);
-	console.log(stream);
+	recorder.start();
+
+	setTimeout(() => {
+		recorder.stop();
+	}, 10000);
+};
+
+const init = async () => {
+	stream = await navigator.mediaDevices.getUserMedia({
+		audio: false,
+		video: { width: 200, height: 300 }, //true
+	});
 	video.srcObject = stream;
 	video.play();
 };
+
+init();
 
 startBtn.addEventListener("click", handleStart);
