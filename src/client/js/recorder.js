@@ -1,7 +1,6 @@
-const { Body } = require("node-fetch");
-
 const startBtn = document.getElementById("startBtn");
-const video = document.getElementById("preview");
+let video = document.getElementById("preview");
+const div = document.querySelector("div");
 
 let stream;
 let recorder;
@@ -13,6 +12,20 @@ const handleDownload = () => {
 	a.download = "MyRecording.webm";
 	document.body.appendChild(a);
 	a.click();
+
+	//video 촬영 멈추고, 비디오 화면을 없애기.
+	const videoTrack = stream.getVideoTracks();
+	videoTrack.forEach((track) => track.stop());
+	console.log(stream);
+
+	stream = null;
+	video.remove();
+	video = null;
+
+	//다시 반복을 위해서 이벤트리스너 제거 및 추가.
+	startBtn.innerText = "Start Recording";
+	startBtn.removeEventListener("click", handleDownload);
+	startBtn.addEventListener("click", handleStart);
 };
 
 const handleStop = () => {
@@ -22,11 +35,26 @@ const handleStop = () => {
 	recorder.stop();
 };
 
+const init = async () => {
+	stream = await navigator.mediaDevices.getUserMedia({
+		audio: false,
+		video: { width: 200, height: 300 }, //true
+	});
+	video.srcObject = stream;
+	video.play();
+};
+
 const handleStart = () => {
+	if (video === null) {
+		video = document.createElement("video");
+		div.prepend(video);
+	}
 	startBtn.innerText = "Stop Recording";
 	startBtn.removeEventListener("click", handleStart);
 	startBtn.addEventListener("click", handleStop);
-
+	if (stream === null) {
+		init();
+	}
 	recorder = new MediaRecorder(stream);
 	recorder.ondataavailable = (event) => {
 		videoFile = URL.createObjectURL(event.data);
@@ -37,19 +65,6 @@ const handleStart = () => {
 		video.play();
 	};
 	recorder.start();
-
-	setTimeout(() => {
-		recorder.stop();
-	}, 10000);
-};
-
-const init = async () => {
-	stream = await navigator.mediaDevices.getUserMedia({
-		audio: false,
-		video: { width: 200, height: 300 }, //true
-	});
-	video.srcObject = stream;
-	video.play();
 };
 
 init();
