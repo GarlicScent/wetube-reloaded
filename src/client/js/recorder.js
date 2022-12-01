@@ -7,16 +7,17 @@ let recorder;
 let videoFile;
 
 const handleDownload = () => {
+	//링크를 생성해서 녹화한 비디오를 다운로드할 수 있게한다.
 	const a = document.createElement("a");
 	a.href = videoFile;
 	a.download = "MyRecording.webm";
 	document.body.appendChild(a);
 	a.click();
+	//body에 축한뒤에 클릭되게 해줘야 링크 다운로드가 작동된다.
 
 	//video 촬영 멈추고, 비디오 화면을 없애기.
 	const videoTrack = stream.getVideoTracks();
 	videoTrack.forEach((track) => track.stop());
-	console.log(stream);
 
 	video.remove();
 	stream = null;
