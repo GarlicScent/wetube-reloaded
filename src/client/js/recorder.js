@@ -18,9 +18,10 @@ const handleDownload = () => {
 	videoTrack.forEach((track) => track.stop());
 	console.log(stream);
 
-	stream = null;
 	video.remove();
+	stream = null;
 	video = null;
+	recorder = null;
 
 	//다시 반복을 위해서 이벤트리스너 제거 및 추가.
 	startBtn.innerText = "Start Recording";
