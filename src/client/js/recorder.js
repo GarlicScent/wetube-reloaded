@@ -1,3 +1,4 @@
+import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
 const startBtn = document.getElementById("startBtn");
 let video = document.getElementById("preview");
 const div = document.querySelector("div");
@@ -6,7 +7,13 @@ let stream;
 let recorder;
 let videoFile;
 
-const handleDownload = () => {
+const handleDownload = async () => {
+	const ffmpeg = createFFmpeg({ log: true });
+	await ffmpeg.load();
+
+	ffmpeg.FS("writeFile", "recording.webm", await fetchFile(videoFile));
+
+	await ffmpeg.run("-i", "recording.webm", "-r", "60", "output.mp4");
 	//링크를 생성해서 녹화한 비디오를 다운로드할 수 있게한다.
 	const a = document.createElement("a");
 	a.href = videoFile;
@@ -58,10 +65,12 @@ const handleStart = () => {
 		init();
 	}
 	recorder = new MediaRecorder(stream);
+	//다운로드 받고 다시 start하면 뭔가 오류가 있다. 이부분 확인이 필요하다.
 	recorder.ondataavailable = (event) => {
 		videoFile = URL.createObjectURL(event.data);
 		//.createObjectURL()은 브라우저 메모리에서만 사용 가능한 url을 생성해준다. 이 url은 파일을 가르킨다. 브라우저 yes. server no!
 		video.srcObject = null;
+		//처음 시작할때 유저미디어 videotrack을 스트림으로 넣었는데, 이것을 빈값으로 넣어준것이다. 그래서 저장한 영상을 반복재생해서 보여줄 수 있도록 하기 위함이다.
 		video.src = videoFile;
 		video.loop = true;
 		video.play();
