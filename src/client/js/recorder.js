@@ -48,6 +48,14 @@ const handleDownload = async () => {
 	document.body.appendChild(thumbA);
 	thumbA.click();
 
+	ffmpeg.FS("unlink", "recording.webm");
+	ffmpeg.FS("unlink", "output.mp4");
+	ffmpeg.FS("unlink", "thumbnail.jpg");
+
+	URL.revokeObjectURL(mp4Url);
+	URL.revokeObjectURL(thumbUrl);
+	URL.revokeObjectURL(videoFile);
+
 	//video 촬영 멈추고, 비디오 화면을 없애기.
 	const videoTrack = stream.getVideoTracks();
 	videoTrack.forEach((track) => track.stop());
