@@ -15,6 +15,12 @@ app.set("view engine", "pug");
 app.set("views", process.cwd() + "/src/views");
 app.use(logger);
 
+app.use((req, res, next) => {
+	res.header("Cross-Origin-Embedder-Policy", "require-corp");
+	res.header("Cross-Origin-Opener-Policy", "same-origin");
+	next();
+});
+
 app.use(express.urlencoded({ extended: true }));
 
 //session 설정 middleware
@@ -33,12 +39,6 @@ app.use(
 		//store: MongoStore.create({mongoUrl:'...'}) 하면 세션아이디가 이제 몽고디비에 저장된다. 서버를 껐다켜도 로그인이 유지된다.
 	})
 );
-
-app.use((req, res, next) => {
-	res.header("Cross-Origin-Embedded-Policy", "required-corp");
-	res.header("Cross-Origin-Opener-Policy", "same-origin");
-	next();
-});
 
 app.use((req, res, next) => {
 	req.sessionStore.all((error, sessions) => {

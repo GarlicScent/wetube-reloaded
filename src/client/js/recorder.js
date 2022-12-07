@@ -12,9 +12,9 @@ const handleDownload = async () => {
 	await ffmpeg.load();
 
 	ffmpeg.FS("writeFile", "recording.webm", await fetchFile(videoFile));
-
+	// videoFile의 파일을 fetchFile() 사용하여 recording.webm 이름의 파일을 생성한다.
 	await ffmpeg.run("-i", "recording.webm", "-r", "60", "output.mp4");
-	//링크를 생성해서 녹화한 비디오를 다운로드할 수 있게한다.
+	//링크를 생성해서 녹화한 비디오를 다운로드할 수 있게한다. "-r", "60" -> record 60 frames per sec
 	const a = document.createElement("a");
 	a.href = videoFile;
 	a.download = "MyRecording.webm";
