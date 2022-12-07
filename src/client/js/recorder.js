@@ -15,11 +15,25 @@ const handleDownload = async () => {
 	// videoFile의 파일을 fetchFile() 사용하여 recording.webm 이름의 파일을 생성한다.
 	await ffmpeg.run("-i", "recording.webm", "-r", "60", "output.mp4");
 	//링크를 생성해서 녹화한 비디오를 다운로드할 수 있게한다. "-r", "60" -> record 60 frames per sec
+	await ffmpeg.run(
+		"-i",
+		"recording.webm",
+		"-ss",
+		"00:00:01",
+		"-frames:v",
+		"1",
+		"thumbnail.jpg"
+	);
 
 	const mp4File = ffmpeg.FS("readFile", "output.mp4");
+	const thumbFile = ffmpeg.FS("readFile", "thumbnail.jpg");
+
 	const mp4Blob = new Blob([mp4File.buffer], { type: "video/mp4" });
 	//what is Unit8Array.buffer? Unit8Array의 raw data 즉 binary data에 접근하려면 buffer를 사용해야한다.
+	const thumbBlob = new Blob([thumbFile.buffer], { type: "image/jpg" });
+
 	const mp4Url = URL.createObjectURL(mp4Blob);
+	const thumbUrl = URL.createObjectURL(thumbBlob);
 
 	const a = document.createElement("a");
 	a.href = mp4Url;
@@ -27,6 +41,12 @@ const handleDownload = async () => {
 	document.body.appendChild(a);
 	a.click();
 	//body에 축한뒤에 클릭되게 해줘야 링크 다운로드가 작동된다.
+
+	const thumbA = document.createElement("a");
+	thumbA.href = thumbUrl;
+	thumbA.download = "MyThumbnail.jpg";
+	document.body.appendChild(thumbA);
+	thumbA.click();
 
 	//video 촬영 멈추고, 비디오 화면을 없애기.
 	const videoTrack = stream.getVideoTracks();
