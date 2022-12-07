@@ -15,6 +15,7 @@ app.set("view engine", "pug");
 app.set("views", process.cwd() + "/src/views");
 app.use(logger);
 
+//SharedArrayBuffer를 사용하기 위한 헤더 설정
 app.use((req, res, next) => {
 	res.header("Cross-Origin-Embedder-Policy", "require-corp");
 	res.header("Cross-Origin-Opener-Policy", "same-origin");

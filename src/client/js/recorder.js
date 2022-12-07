@@ -15,9 +15,15 @@ const handleDownload = async () => {
 	// videoFile의 파일을 fetchFile() 사용하여 recording.webm 이름의 파일을 생성한다.
 	await ffmpeg.run("-i", "recording.webm", "-r", "60", "output.mp4");
 	//링크를 생성해서 녹화한 비디오를 다운로드할 수 있게한다. "-r", "60" -> record 60 frames per sec
+
+	const mp4File = ffmpeg.FS("readFile", "output.mp4");
+	const mp4Blob = new Blob([mp4File.buffer], { type: "video/mp4" });
+	//what is Unit8Array.buffer? Unit8Array의 raw data 즉 binary data에 접근하려면 buffer를 사용해야한다.
+	const mp4Url = URL.createObjectURL(mp4Blob);
+
 	const a = document.createElement("a");
-	a.href = videoFile;
-	a.download = "MyRecording.webm";
+	a.href = mp4Url;
+	a.download = "MyRecording.mp4";
 	document.body.appendChild(a);
 	a.click();
 	//body에 축한뒤에 클릭되게 해줘야 링크 다운로드가 작동된다.
