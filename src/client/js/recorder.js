@@ -1,6 +1,6 @@
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
 const actionBtn = document.getElementById("actionBtn");
-let video = document.getElementById("preview");
+const video = document.getElementById("preview");
 const div = document.querySelector("div");
 
 let stream;
@@ -11,6 +11,7 @@ const files = {
 	input: "recording.webm",
 	output: "output.mp4",
 	thumb: "thumbnail.jpg",
+	flag: 0,
 };
 
 const downloadFile = (fileUrl, fileName) => {
@@ -20,6 +21,7 @@ const downloadFile = (fileUrl, fileName) => {
 	document.body.appendChild(a);
 	//body에 추가한 뒤에 클릭되게 해줘야 링크 다운로드가 작동된다.
 	a.click();
+	files.flag = 1;
 };
 
 const handleDownload = async () => {
@@ -57,7 +59,7 @@ const handleDownload = async () => {
 	const thumbUrl = URL.createObjectURL(thumbBlob);
 
 	downloadFile(mp4Url, "MyRecording.mp4");
-	downloadFile(thumbUrl, "Myfiles.thumb");
+	downloadFile(thumbUrl, "Mythumbnail.jpg");
 
 	ffmpeg.FS("unlink", files.input);
 	ffmpeg.FS("unlink", files.output);
@@ -72,19 +74,18 @@ const handleDownload = async () => {
 	actionBtn.addEventListener("click", handleStart);
 };
 
-const handleStop = () => {
-	actionBtn.innerText = "Download Recording";
-	actionBtn.removeEventListener("click", handleStop);
-	actionBtn.addEventListener("click", handleDownload);
-	recorder.stop();
-};
-
 const handleStart = () => {
-	actionBtn.innerText = "Stop Recording";
+	actionBtn.innerText = "Recording";
+	actionBtn.disabled = true;
 	actionBtn.removeEventListener("click", handleStart);
-	actionBtn.addEventListener("click", handleStop);
+
+	if (files.flag) {
+		video.src = null;
+		video.srcObject = stream;
+		video.play();
+	}
+
 	recorder = new MediaRecorder(stream);
-	//다운로드 받고 다시 start하면 뭔가 오류가 있다. 이부분 확인이 필요하다.
 	recorder.ondataavailable = (event) => {
 		videoFile = URL.createObjectURL(event.data);
 		//.createObjectURL()은 브라우저 메모리에서만 사용 가능한 url을 생성해준다. 이 url은 파일을 가르킨다. 브라우저 yes. server no!
@@ -93,14 +94,25 @@ const handleStart = () => {
 		video.src = videoFile;
 		video.loop = true;
 		video.play();
+		actionBtn.innerText = "Download";
+		actionBtn.disabled = false;
+		actionBtn.addEventListener("click", handleDownload);
 	};
 	recorder.start();
+
+	setTimeout(() => {
+		recorder.stop();
+	}, 5000);
 };
 
 const init = async () => {
+	console.log(stream);
 	stream = await navigator.mediaDevices.getUserMedia({
 		audio: false,
-		video: { width: 200, height: 300 }, //true
+		video: {
+			width: 1024,
+			height: 576,
+		}, //true
 	});
 	video.srcObject = stream;
 	video.play();
