@@ -1,5 +1,5 @@
 import { createFFmpeg, fetchFile } from "@ffmpeg/ffmpeg";
-const startBtn = document.getElementById("startBtn");
+const actionBtn = document.getElementById("actionBtn");
 let video = document.getElementById("preview");
 const div = document.querySelector("div");
 
@@ -7,26 +7,47 @@ let stream;
 let recorder;
 let videoFile;
 
+const files = {
+	input: "recording.webm",
+	output: "output.mp4",
+	thumb: "thumbnail.jpg",
+};
+
+const downloadFile = (fileUrl, fileName) => {
+	const a = document.createElement("a");
+	a.href = fileUrl;
+	a.download = fileName;
+	document.body.appendChild(a);
+	//body에 추가한 뒤에 클릭되게 해줘야 링크 다운로드가 작동된다.
+	a.click();
+};
+
 const handleDownload = async () => {
+	actionBtn.removeEventListener("click", handleDownload);
+
+	actionBtn.innerText = "Transcoding...";
+
+	actionBtn.disabled = true;
+
 	const ffmpeg = createFFmpeg({ log: true });
 	await ffmpeg.load();
 
-	ffmpeg.FS("writeFile", "recording.webm", await fetchFile(videoFile));
-	// videoFile의 파일을 fetchFile() 사용하여 recording.webm 이름의 파일을 생성한다.
-	await ffmpeg.run("-i", "recording.webm", "-r", "60", "output.mp4");
+	ffmpeg.FS("writeFile", files.input, await fetchFile(videoFile));
+	// videoFile의 파일을 fetchFile() 사용하여 files.input 이름의 파일을 생성한다.
+	await ffmpeg.run("-i", files.input, "-r", "60", files.output);
 	//링크를 생성해서 녹화한 비디오를 다운로드할 수 있게한다. "-r", "60" -> record 60 frames per sec
 	await ffmpeg.run(
 		"-i",
-		"recording.webm",
+		files.input,
 		"-ss",
 		"00:00:01",
 		"-frames:v",
 		"1",
-		"thumbnail.jpg"
+		files.thumb
 	);
 
-	const mp4File = ffmpeg.FS("readFile", "output.mp4");
-	const thumbFile = ffmpeg.FS("readFile", "thumbnail.jpg");
+	const mp4File = ffmpeg.FS("readFile", files.output);
+	const thumbFile = ffmpeg.FS("readFile", files.thumb);
 
 	const mp4Blob = new Blob([mp4File.buffer], { type: "video/mp4" });
 	//what is Unit8Array.buffer? Unit8Array의 raw data 즉 binary data에 접근하려면 buffer를 사용해야한다.
@@ -35,69 +56,33 @@ const handleDownload = async () => {
 	const mp4Url = URL.createObjectURL(mp4Blob);
 	const thumbUrl = URL.createObjectURL(thumbBlob);
 
-	const a = document.createElement("a");
-	a.href = mp4Url;
-	a.download = "MyRecording.mp4";
-	document.body.appendChild(a);
-	a.click();
-	//body에 축한뒤에 클릭되게 해줘야 링크 다운로드가 작동된다.
+	downloadFile(mp4Url, "MyRecording.mp4");
+	downloadFile(thumbUrl, "Myfiles.thumb");
 
-	const thumbA = document.createElement("a");
-	thumbA.href = thumbUrl;
-	thumbA.download = "MyThumbnail.jpg";
-	document.body.appendChild(thumbA);
-	thumbA.click();
-
-	ffmpeg.FS("unlink", "recording.webm");
-	ffmpeg.FS("unlink", "output.mp4");
-	ffmpeg.FS("unlink", "thumbnail.jpg");
+	ffmpeg.FS("unlink", files.input);
+	ffmpeg.FS("unlink", files.output);
+	ffmpeg.FS("unlink", files.thumb);
 
 	URL.revokeObjectURL(mp4Url);
 	URL.revokeObjectURL(thumbUrl);
 	URL.revokeObjectURL(videoFile);
 
-	//video 촬영 멈추고, 비디오 화면을 없애기.
-	const videoTrack = stream.getVideoTracks();
-	videoTrack.forEach((track) => track.stop());
-
-	video.remove();
-	stream = null;
-	video = null;
-	recorder = null;
-
-	//다시 반복을 위해서 이벤트리스너 제거 및 추가.
-	startBtn.innerText = "Start Recording";
-	startBtn.removeEventListener("click", handleDownload);
-	startBtn.addEventListener("click", handleStart);
+	actionBtn.disabled = false;
+	actionBtn.innerText = "Record Again";
+	actionBtn.addEventListener("click", handleStart);
 };
 
 const handleStop = () => {
-	startBtn.innerText = "Download Recording";
-	startBtn.removeEventListener("click", handleStop);
-	startBtn.addEventListener("click", handleDownload);
+	actionBtn.innerText = "Download Recording";
+	actionBtn.removeEventListener("click", handleStop);
+	actionBtn.addEventListener("click", handleDownload);
 	recorder.stop();
 };
 
-const init = async () => {
-	stream = await navigator.mediaDevices.getUserMedia({
-		audio: false,
-		video: { width: 200, height: 300 }, //true
-	});
-	video.srcObject = stream;
-	video.play();
-};
-
 const handleStart = () => {
-	if (video === null) {
-		video = document.createElement("video");
-		div.prepend(video);
-	}
-	startBtn.innerText = "Stop Recording";
-	startBtn.removeEventListener("click", handleStart);
-	startBtn.addEventListener("click", handleStop);
-	if (stream === null) {
-		init();
-	}
+	actionBtn.innerText = "Stop Recording";
+	actionBtn.removeEventListener("click", handleStart);
+	actionBtn.addEventListener("click", handleStop);
 	recorder = new MediaRecorder(stream);
 	//다운로드 받고 다시 start하면 뭔가 오류가 있다. 이부분 확인이 필요하다.
 	recorder.ondataavailable = (event) => {
@@ -112,6 +97,15 @@ const handleStart = () => {
 	recorder.start();
 };
 
+const init = async () => {
+	stream = await navigator.mediaDevices.getUserMedia({
+		audio: false,
+		video: { width: 200, height: 300 }, //true
+	});
+	video.srcObject = stream;
+	video.play();
+};
+
 init();
 
-startBtn.addEventListener("click", handleStart);
+actionBtn.addEventListener("click", handleStart);
