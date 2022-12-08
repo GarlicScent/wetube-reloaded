@@ -10,7 +10,8 @@ form {
 #video {
 	margin-top: 5px;
 }
-input:not([type="range"]) {
+input:not([type="range"]),
+input[type="submit"] {
 	// input:not(input[type="range"]){ 로 작성시 다른 input이 미적용되어 수정함.
 	all: unset;
 	padding: 13px 20px;
@@ -35,4 +36,12 @@ input[type="submit"],
 	cursor: pointer;
 	color: white;
 	padding: 12px 20px;
+	border: none;
+	&:focus {
+		outline: none;
+	}
+	&:disabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
 }
