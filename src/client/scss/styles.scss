@@ -36,3 +36,42 @@ main {
 	margin: 0 auto;
 	margin-top: 50px;
 }
+@keyframes goAway {
+	0% {
+		transform: translateY(-60px);
+	}
+	25% {
+		transform: translateY(0px);
+	}
+	50% {
+		transform: translateY(0px);
+	}
+	100% {
+		transform: translateY(-60px);
+	}
+}
+.message {
+	position: absolute;
+	top: 15px;
+	left: 0;
+	right: 0;
+	margin: 0 auto;
+	max-width: 280px;
+	padding: 10px 20px;
+	border-radius: 30px;
+	text-align: center;
+	animation: goAway 4s ease-in-out forwards;
+	// animation-delay: 2.8s;
+	&.error {
+		background-color: tomato;
+		color: white;
+	}
+	&.info {
+		background-color: rgba(255, 255, 0, 0.8);
+		color: black;
+	}
+	&.success {
+		background-color: yellowgreen;
+		color: white;
+	}
+}

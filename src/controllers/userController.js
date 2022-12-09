@@ -156,12 +156,15 @@ export const finishGithubLogin = async (req, res) => {
 	}
 };
 export const logout = (req, res) => {
-	req.session.destroy();
+	req.flash("info", "Bye Bye");
+	// req.session.destroy();
+	req.session.user = null;
+	res.locals.loggedInUser = req.session.user;
+	req.session.loggedIn = false;
 	// kakao logout방법:
 	// curl -v -X POST "https://kapi.kakao.com/v1/user/logout" \
 	// -H "Content-Type: application/x-www-form-urlencoded" \
 	// -H "Authorization: Bearer ${ACCESS_TOKEN}"
-
 	return res.redirect("/");
 };
 
@@ -331,6 +334,7 @@ export const postEdit = async (req, res) => {
 
 export const getChangePassword = (req, res) => {
 	if (req.session.user.socialOnly === true) {
+		req.flash("error", "Can't change password. because social loggedIn.");
 		return res.redirect("/");
 	}
 	res.render("users/change-password", { pageTitle: "Change Password" });
@@ -361,6 +365,8 @@ export const postChangePassword = async (req, res) => {
 	}
 	user.password = newPassword;
 	await user.save();
+
+	req.flash("info", "Password updated");
 	res.redirect("/users/logout");
 };
 export const see = async (req, res) => {

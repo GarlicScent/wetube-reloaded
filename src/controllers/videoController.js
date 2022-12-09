@@ -41,6 +41,7 @@ export const getEdit = async (req, res) => {
 		return res.status(404).render("404", { pageTitle: "Video not found" });
 	}
 	if (String(video.owner) !== String(_id)) {
+		req.flash("error", "Not authorized");
 		return res.status(403).redirect("/");
 		//403은 forbidden을 의미한다.
 		//비디오를 업로드한 사용자 본인이 아니라면 접속할 수 없게 설정.
@@ -61,6 +62,7 @@ export const postEdit = async (req, res) => {
 		return res.status(404).render("404", { pageTitle: "Video not found" });
 	}
 	if (String(video.owner) !== String(_id)) {
+		req.flash("error", "You are not the the owner of the video.");
 		return res.status(403).redirect("/");
 	}
 	await Video.findByIdAndUpdate(id, {
@@ -68,6 +70,7 @@ export const postEdit = async (req, res) => {
 		description,
 		hashtags: Video.formatHashtags(hashtags),
 	});
+	req.flash("success", "Changes saved.");
 	return res.redirect(`/videos/${id}`);
 };
 
@@ -125,6 +128,7 @@ export const deleteVideo = async (req, res) => {
 		return res.render("404", { pageTitle: "Video not found" });
 	}
 	if (String(video.owner) !== String(_id)) {
+		req.flash("error", "You are not the the owner of the video.");
 		return res.status(403).redirect("/");
 	}
 
