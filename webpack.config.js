@@ -1,6 +1,8 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const path = require("path");
 
+const BASE_JS = "./src/client/js/";
+
 module.exports = {
 	plugins: [
 		new MiniCssExtractPlugin({
@@ -8,9 +10,10 @@ module.exports = {
 		}),
 	],
 	entry: {
-		main: "./src/client/js/main.js",
-		videoPlayer: "./src/client/js/videoPlayer.js",
-		recorder: "./src/client/js/recorder.js",
+		main: BASE_JS + "main.js",
+		videoPlayer: BASE_JS + "videoPlayer.js",
+		recorder: BASE_JS + "recorder.js",
+		commentSection: BASE_JS + "commentSection.js",
 	},
 	mode: "development",
 	//mode 설정을 안하면 기본적으로 production 모드로 설정되어 압축된다. development에서는 읽기 편하게 바꿔준다.
