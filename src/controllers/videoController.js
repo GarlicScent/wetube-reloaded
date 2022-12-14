@@ -20,7 +20,9 @@ export const home = async (req, res) => {
 export const watch = async (req, res) => {
 	const { id } = req.params;
 
-	const video = await Video.findById(id).populate("owner");
+	const video = await Video.findById(id)
+		.populate("owner")
+		.populate("comments");
 	//이렇게 모델들끼리 데이터를 연결할 수 있다.! mysql에서 join과 같은 느낌이네.
 
 	console.log("vid:", video);
@@ -192,6 +194,8 @@ export const createComment = async (req, res) => {
 		owner: user._id,
 		video: id,
 	});
+	video.comments.push(comment._id);
+	await video.save();
 
 	return res.sendStatus(201);
 };
