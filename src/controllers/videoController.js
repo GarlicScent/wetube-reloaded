@@ -1,5 +1,6 @@
 import Video from "../models/Video";
 import User from "../models/User";
+import Comment from "../models/Comment";
 
 // Video.find({}, (error, videos) => {
 // 	console.log("search finished");
@@ -173,9 +174,24 @@ export const registerView = async (req, res) => {
 	return res.sendStatus(200);
 };
 
-export const createComment = (req, res) => {
-	console.log(req.body);
-	console.log(req.body.text);
-	console.log(req.params);
-	return res.end();
+export const createComment = async (req, res) => {
+	const {
+		session: { user },
+		body: { text },
+		params: { id },
+	} = req;
+
+	const video = await Video.findById(id);
+
+	if (!video) {
+		return res.sendStatus(404);
+	}
+
+	const comment = await Comment.create({
+		text,
+		owner: user._id,
+		video: id,
+	});
+
+	return res.sendStatus(201);
 };

@@ -17,6 +17,7 @@ const handleSubmit = (event) => {
 		//headers 설정으로 json을 보내는 것을 알려주지 않으면 express.json()이 그냥 string을 보내는 것으로 안다.
 		body: JSON.stringify({ text }),
 	});
+	textarea.value = "";
 };
 
 if (form) {
