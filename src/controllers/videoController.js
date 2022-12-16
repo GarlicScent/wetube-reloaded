@@ -25,7 +25,7 @@ export const watch = async (req, res) => {
 		.populate("comments");
 	//이렇게 모델들끼리 데이터를 연결할 수 있다.! mysql에서 join과 같은 느낌이네.
 
-	console.log("vid:", video);
+	// console.log("vid:", video);
 
 	if (!video) {
 		return res.status(404).render("404", { pageTitle: "Video not found" });
@@ -195,7 +195,32 @@ export const createComment = async (req, res) => {
 		video: id,
 	});
 	video.comments.push(comment._id);
-	await video.save();
 
-	return res.sendStatus(201);
+	// 로그인한 유저 정보에도 작성한 댓글이 어떤 것인지 저장.
+	const saveUser = await User.findById(user._id);
+	saveUser.comments.push(comment._id);
+
+	await video.save();
+	await saveUser.save();
+	req.session.user = saveUser;
+	return res.status(201).json({ newCommentId: comment._id });
+};
+
+export const deleteComment = async (req, res) => {
+	const {
+		session: { user },
+		params: { commentId },
+	} = req;
+	console.log(commentId);
+	console.log(typeof commentId);
+
+	const comment = await Comment.findById(commentId);
+
+	if (String(comment.owner) !== String(user._id)) {
+		return res.sendStatus(404);
+	}
+
+	await Comment.findByIdAndDelete(commentId);
+
+	return res.sendStatus(200);
 };
