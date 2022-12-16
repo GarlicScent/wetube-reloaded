@@ -8,8 +8,12 @@
     "url": "git+https://github.com/GarlicScent/wetube-reloaded.git"
   },
   "scripts": {
+    "start": "node build/init.js",
+    "build": "npm run build:server && npm run build:assets",
+    "build:server": "babel src -d build --ignore src/client",
+    "build:assets": "webpack --mode=production",
     "dev:server": "nodemon",
-    "dev:assets": "webpack"
+    "dev:assets": "webpack --mode=development -w"
   },
   "author": "Dong Hyun Kim<dongzai@naver.com>",
   "license": "MIT",
@@ -34,7 +38,8 @@
     "regenerator-runtime": "^0.13.11"
   },
   "devDependencies": {
-    "@babel/core": "^7.16.10",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.20.5",
     "@babel/node": "^7.16.8",
     "@babel/preset-env": "^7.16.11",
     "babel-loader": "^9.1.0",

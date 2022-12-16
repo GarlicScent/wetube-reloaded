@@ -15,9 +15,9 @@ module.exports = {
 		recorder: BASE_JS + "recorder.js",
 		commentSection: BASE_JS + "commentSection.js",
 	},
-	mode: "development",
+	// mode: "development", mode 설정은 package.json command로 "webpack --mode=development"로 줄 수 있다.
 	//mode 설정을 안하면 기본적으로 production 모드로 설정되어 압축된다. development에서는 읽기 편하게 바꿔준다.
-	watch: true,
+	// watch: true,
 	//nodemon 처럼 변경하면 지켜보다가 바로 적용해준다.
 	output: {
 		filename: "js/[name].js",
