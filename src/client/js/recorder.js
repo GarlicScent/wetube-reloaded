@@ -106,7 +106,7 @@ const handleStart = () => {
 };
 
 const init = async () => {
-	console.log(stream);
+	// console.log(stream);
 	stream = await navigator.mediaDevices.getUserMedia({
 		audio: false,
 		video: {
