@@ -19,8 +19,11 @@ app.use(logger);
 
 //SharedArrayBuffer를 사용하기 위한 헤더 설정
 app.use((req, res, next) => {
-	res.header("Cross-Origin-Embedder-Policy", "require-corp");
-	res.header("Cross-Origin-Opener-Policy", "same-origin");
+	res.setHeader("Access-Control-Allow-Origin", "*");
+	res.header(
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested-With, Content-Type, Accept"
+	);
 	next();
 });
 
