@@ -19,9 +19,9 @@ header
               span 💁🏻
             else 
               if loggedInUser.avatarUrl.includes('kakao') || loggedInUser.avatarUrl.includes('github')
-                img(src=loggedInUser.avatarUrl, alt="").header__avatar
+                img.header__avatar(src=loggedInUser.avatarUrl)
               else 
-                img(src="/" + loggedInUser.avatarUrl, alt="").header__avatar
+                img.header__avatar(src=loggedInUser.avatarUrl)
       else 
         li 
           a(href="/login").header__btn Login
