@@ -230,7 +230,8 @@ export const finishKakaoLogin = async (req, res) => {
 		const { kakao_account } = userData;
 		const { profile } = kakao_account;
 
-		if (!kakao_account.is_email_valid && !kakao_account.is_email_verified) {
+		if (!kakao_account.is_email_valid || !kakao_account.is_email_verified) {
+			//사용가능한 이메일이 아니거나, 인증되지 않았다면 (둘중 하나라도 아니라면) 다시 로그인하게끔 한다.
 			return res.redirect("/login");
 		}
 		let user = await User.findOne({ email: kakao_account.email });
