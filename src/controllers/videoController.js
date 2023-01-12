@@ -13,7 +13,7 @@ export const home = async (req, res) => {
 			.populate("owner");
 		return res.render("home", { pageTitle: "Home", videos });
 	} catch (error) {
-		return res.render("server-error", error);
+		console.log(error);
 	}
 };
 
@@ -30,7 +30,7 @@ export const watch = async (req, res) => {
 	if (!video) {
 		return res.status(404).render("404", { pageTitle: "Video not found" });
 	}
-	return res.render("Watch", { pageTitle: video.title, video });
+	return res.render("watch", { pageTitle: video.title, video });
 };
 export const getEdit = async (req, res) => {
 	const {
@@ -49,7 +49,7 @@ export const getEdit = async (req, res) => {
 		//403은 forbidden을 의미한다.
 		//비디오를 업로드한 사용자 본인이 아니라면 접속할 수 없게 설정.
 	}
-	return res.render("Edit", { pageTitle: `Editing`, video });
+	return res.render("edit", { pageTitle: `Editing`, video });
 };
 
 export const postEdit = async (req, res) => {
@@ -129,7 +129,7 @@ export const deleteVideo = async (req, res) => {
 	const video = await Video.findById(id);
 	//비디오가 없다면 404로 넘어가고, 있다면 로그인한 사람과 비디오의 owner가 같은지 체크해서, 다르다면 forbidden하여 홈으로 돌려보낸다.
 	if (!video) {
-		return res.render("404", { pageTitle: "Video not found" });
+		return res.status(404).render("404", { pageTitle: "Video not found" });
 	}
 	if (String(video.owner) !== String(_id)) {
 		req.flash("error", "You are not the the owner of the video.");
