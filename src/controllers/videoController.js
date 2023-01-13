@@ -65,7 +65,7 @@ export const postEdit = async (req, res) => {
 		return res.status(404).render("404", { pageTitle: "Video not found" });
 	}
 	if (String(video.owner) !== String(_id)) {
-		req.flash("error", "You are not the the owner of the video.");
+		req.flash("error", "You are not the owner of the video.");
 		return res.status(403).redirect("/");
 	}
 	await Video.findByIdAndUpdate(id, {
@@ -132,7 +132,7 @@ export const deleteVideo = async (req, res) => {
 		return res.status(404).render("404", { pageTitle: "Video not found" });
 	}
 	if (String(video.owner) !== String(_id)) {
-		req.flash("error", "You are not the the owner of the video.");
+		req.flash("error", "You are not the owner of the video.");
 		return res.status(403).redirect("/");
 	}
 

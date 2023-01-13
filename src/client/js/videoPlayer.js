@@ -26,7 +26,7 @@ const handlePlayClick = () => {
 	playBtnIcon.classList = video.paused ? "fas fa-play" : "fas fa-pause";
 };
 
-const handleMute = (e) => {
+const handleMute = () => {
 	if (video.muted) {
 		//음소거인데 버튼 클릭했을 때
 		video.muted = false;
